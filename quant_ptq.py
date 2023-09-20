@@ -145,7 +145,7 @@ def prepare_model(calibrator, opt, device):
     data_dict = check_det_dataset(opt.data)
     calib_path = data_dict['val']
     
-    # 加载FP32的Pytorch模型
+    # 加载Pytorch模型
     model = load_model(opt.weights, device)
 
     quant.initialize_calib_method(per_channel_quantization=True, calib_method=calibrator)  
@@ -290,8 +290,7 @@ def evaluate_accuracy(model, opt, testloader):
 
 def sensitive_analysis(model, opt, data_loader, summary_file='./summary_sensitive_analysis.json'):
     summary = quant.SummaryTool(summary_file)
-    # model是插入Q、DQ节点后的模型
-    
+
     print("\033[1;31m所有节点均做量化的评估结果:\033[0m")
     map50_calibrated, map5090_calibrated = evaluate_accuracy(model, opt, data_loader)
     print(f"\033[1;31mCalibration evaluation: mAP@IoU=0.50:{map50_calibrated:.5f}, mAP@IoU=0.50:0.95:{map5090_calibrated:.5f}\033[0m") 
@@ -327,7 +326,7 @@ if __name__ == "__main__":
     # 准备模型和dataloader
     model, data_loader = prepare_model(calibrator=opt.calibrator, opt=opt, device=device)
 
-    # 校准
+    # 做校准
     with torch.no_grad():
         calibrate_model(
             model=model,
